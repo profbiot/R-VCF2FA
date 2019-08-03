@@ -2,10 +2,7 @@ library(seqinr)
 library(stringr)
 
 function(input, output) {
-  
-  
-
-  output$contents <- renderTable({
+    output$contents <- renderTable({
     
     # input$file1 will be NULL initially. After the user selects
     # and uploads a file, head of that data file by default,
@@ -213,11 +210,6 @@ function(input, output) {
     
   })
   
-  #thedata2 <- reactive(as.data.frame(thedata()))
-  #names(thedata2()) <- reactive(c(">Modified_FASTA"))
-  thedata2 <- reactive(as.data.frame(thedata(), col.names=c(">Mod_FASTA")))
-  
-
   # downloadHandler() takes two arguments, both functions.
   # The content function is passed a filename as an argument, and
   #   it should write out data to that filename.
@@ -233,7 +225,7 @@ function(input, output) {
     # the argument 'file'.
     content = function(file) {
       # Write to a file specified by the 'file' argument
-      write.table(thedata2(), file, sep = "\t",col.names=TRUE,row.names = FALSE,quote=FALSE)
+      write.table(thedata(), file, sep = "\t",col.names=">Modified_FASTA",row.names = FALSE,quote=FALSE)
     }
   )
 }
