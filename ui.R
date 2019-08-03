@@ -1,6 +1,4 @@
 library(shiny)
-library(seqinr)
-library(stringr)
 
 #Define UI functions for file input tools
 VCF_UI <- function(id) {

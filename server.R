@@ -1,6 +1,9 @@
-testing123 <- c('>My Fasta header','GCGATGATCGTAGT')
+library(seqinr)
+library(stringr)
 
 function(input, output) {
+  
+  
 
   output$contents <- renderTable({
     
@@ -153,9 +156,68 @@ function(input, output) {
     }
     
     return(myString2)
+
     
   })
   
+  thedata <- renderText({
+    req(input$file1)
+    req(input$file2)
+    
+    tryCatch(
+      {
+        df2 <- read.fasta(input$file2$datapath, as.string=TRUE)
+      },
+      error = function(e) {
+        # return a safeError if a parsing error occurs
+        stop(safeError(e))
+      }
+    )
+    
+    tryCatch(
+      {
+        df <- read.table(input$file1$datapath,
+                         header = FALSE,
+                         sep = '\t')
+        names(df)<- c('CHROM','POS','ID','REF','ALT','QUAL','FILTER','INFO','FORMAT','VALUES')
+      },
+      error = function(e) {
+        # return a safeError if a parsing error occurs
+        stop(safeError(e))
+      }
+    )
+    
+    startBase<-df[1,2]
+    last <- nrow(df)
+    lastBase<-df[last,2]
+    
+    #myString <- paste('File uploaded for',names(df2)[[1]])
+    # myString <-substr(df2[[1]],startBase,lastBase)
+    # 
+    # #altBase <- df[1,5]
+    
+    
+    test<-df2[[1]]
+    myString <-gsub(" ","",test, fixed=FALSE)
+    myString2 <-substr(myString, startBase,lastBase)
+    
+    for (i in 1:last){
+      pos<-df[i,2]-startBase+1
+      substr(myString2, pos, pos) <- as.character(df[i,5])
+    }
+    
+    #myString3 <- as.dataframe(myString2)
+    #names(myString3)<-">Modified_FASTA"
+    return(myString2)
+    
+    
+  })
+  
+  #thedata2 <- reactive(as.data.frame(thedata()))
+  #names(thedata2()) <- reactive(c(">Modified_FASTA"))
+  thedata2 <- reactive(as.data.frame(thedata(), col.names=c(">Mod_FASTA")))
+  
+
   # downloadHandler() takes two arguments, both functions.
   # The content function is passed a filename as an argument, and
   #   it should write out data to that filename.
@@ -171,7 +233,7 @@ function(input, output) {
     # the argument 'file'.
     content = function(file) {
       # Write to a file specified by the 'file' argument
-      write.table(testing123, file, sep = "\t",col.names=FALSE,row.names = FALSE,quote=FALSE)
+      write.table(thedata2(), file, sep = "\t",col.names=TRUE,row.names = FALSE,quote=FALSE)
     }
   )
 }
