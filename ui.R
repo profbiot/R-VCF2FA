@@ -57,11 +57,11 @@ fluidPage(
       
       # Output: Preview Original FASTA 
       h4("FASTA sequence sliced from first variant to last variant"),
-      div(style="width:500px;",verbatimTextOutput("value")),
+      div(style="width:500px;",verbatimTextOutput("value2")),
 
       # Output: Preview Modified FASTA
       h4("Alternative FASTA sequence, variants capitalized"),
-      div(style="width:500px;",verbatimTextOutput("value2")),
+      div(style="width:500px;",verbatimTextOutput("value3")),
 
       # Output: Preview VCF file
       h4("Preview Data from VCF File"),

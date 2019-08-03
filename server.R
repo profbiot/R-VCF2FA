@@ -33,6 +33,129 @@ function(input, output) {
     datasetInput()
   })
   
+  output$value <- renderText({
+    
+    # input$file1 will be NULL initially. After the user selects
+    # and uploads a file, head of that data file by default,
+    # or all rows if selected, will be shown.
+    
+    req(input$file1)
+    
+    # when reading semicolon separated files,
+    # having a comma separator causes `read.csv` to error
+    tryCatch(
+      {
+        df <- read.table(input$file1$datapath,
+                         header = FALSE,
+                         sep = '\t')
+        names(df)<- c('CHROM','POS','ID','REF','ALT','QUAL','FILTER','INFO','FORMAT','VALUES')
+      },
+      error = function(e) {
+        # return a safeError if a parsing error occurs
+        stop(safeError(e))
+      }
+    )
+    
+    startBase<-df[1,2]
+    last <- nrow(df)
+    lastBase<-df[last,2]
+    
+    myString <- paste('First variant called at', startBase,'and last variant called at',lastBase)
+    
+    return(myString)
+  })
+  
+  output$value2 <- renderText({
+    req(input$file1)
+    req(input$file2)
+    
+    tryCatch(
+      {
+        df <- read.table(input$file1$datapath,
+                         header = FALSE,
+                         sep = '\t')
+        names(df)<- c('CHROM','POS','ID','REF','ALT','QUAL','FILTER','INFO','FORMAT','VALUES')
+      },
+      error = function(e) {
+        # return a safeError if a parsing error occurs
+        stop(safeError(e))
+      }
+    )
+    
+    startBase<-df[1,2]
+    last <- nrow(df)
+    lastBase<-df[last,2]
+    
+    tryCatch(
+      {
+        df2 <- read.fasta(input$file2$datapath, as.string=TRUE)
+      },
+      error = function(e) {
+        # return a safeError if a parsing error occurs
+        stop(safeError(e))
+      }
+    )
+    
+    test<-df2[[1]]
+    myString <-gsub(" ","",test, fixed=FALSE)
+    myString2 <-substr(myString, startBase,lastBase)
+    #myString <-"TESTING"
+    return(myString2)
+  })
+  
+  output$value3 <- renderText({
+    req(input$file1)
+    req(input$file2)
+    
+    tryCatch(
+      {
+        df2 <- read.fasta(input$file2$datapath, as.string=TRUE)
+      },
+      error = function(e) {
+        # return a safeError if a parsing error occurs
+        stop(safeError(e))
+      }
+    )
+    
+    tryCatch(
+      {
+        df <- read.table(input$file1$datapath,
+                         header = FALSE,
+                         sep = '\t')
+        names(df)<- c('CHROM','POS','ID','REF','ALT','QUAL','FILTER','INFO','FORMAT','VALUES')
+      },
+      error = function(e) {
+        # return a safeError if a parsing error occurs
+        stop(safeError(e))
+      }
+    )
+    
+    startBase<-df[1,2]
+    last <- nrow(df)
+    lastBase<-df[last,2]
+    
+    #myString <- paste('File uploaded for',names(df2)[[1]])
+    # myString <-substr(df2[[1]],startBase,lastBase)
+    # 
+    # #altBase <- df[1,5]
+    
+    
+    test<-df2[[1]]
+    myString <-gsub(" ","",test, fixed=FALSE)
+    myString2 <-substr(myString, startBase,lastBase)
+    #substr(myString2,1,1) <- as.character(df[1,5])
+    #myString <-"TESTING"
+    #return(myString2)
+    
+    for (i in 1:last){
+      pos<-df[i,2]-startBase+1
+      substr(myString2, pos, pos) <- as.character(df[i,5])
+    }
+    
+    return(myString2)
+    
+  })
+  
   # downloadHandler() takes two arguments, both functions.
   # The content function is passed a filename as an argument, and
   #   it should write out data to that filename.
