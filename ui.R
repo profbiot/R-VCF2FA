@@ -1,6 +1,6 @@
 library(shiny)
 
-#Define UI functions for file input tools
+#Define two UI functions for file input tools for vcf and fasta formats
 VCF_UI <- function(id) {
   ns = NS(id)
   
@@ -19,7 +19,7 @@ fasta_UI <- function(id) {
     textOutput(ns("output_area")), 
     fileInput("file2", "Choose Reference FASTA File",
               multiple = FALSE,
-              accept = c(".fa",".fasta"))
+              accept = c(".fa",".fasta",".fna"))
   )
 }
 
@@ -32,7 +32,7 @@ fluidPage(
   includeCSS("styles.css"),
   
   # App title ----
-  titlePanel(h1("Endicott College Bioinformatics"), "Shiny App for Unit 1 Project"),
+  titlePanel(h1("Endicott College Bioinformatics: VCF2FA"), "Shiny App for Unit 1 Project"),
   tags$hr(),
   
   # Sidebar layout with input and output definitions ----
@@ -41,7 +41,7 @@ fluidPage(
     # Sidebar panel for inputs ----
     sidebarPanel(
       
-      # Input: Select a file ----
+      # Input: Select a vcf file ----
       VCF_UI("test1"),
       actionButton("pvButton", h6("Preview vcf file")),
       # Horizontal line, provides spacing
@@ -49,7 +49,11 @@ fluidPage(
       # Input: Select a file ----
       fasta_UI("test2"),
       # Horizontal line, provides spacing
+      tags$b("Select range for output FASTA file\n"),
+      textInput(inputId="startBase", "Enter first base of gene or region of interest"),
+      textInput(inputId="endBase", "Enter last base of gene or region of interest"),
       tags$b("Download modified FASTA file\n"),
+      # Horizontal line, provides spacing
       tags$hr(),
       downloadButton('downloadData', 'Download')
     ),
@@ -58,7 +62,7 @@ fluidPage(
     mainPanel(
       
       # Output: Preview Original FASTA 
-      h4("FASTA sequence sliced from first variant to last variant"),
+      h4("FASTA sequence sliced from first base to last base"),
       div(style="width:500px;",verbatimTextOutput("value2")),
 
       # Output: Preview Modified FASTA
