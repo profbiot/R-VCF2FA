@@ -28,8 +28,12 @@ fasta_UI <- function(id) {
 # Main panel to preview data/results
 
 fluidPage(
+  # Include css style sheet
+  includeCSS("styles.css"),
+  
   # App title ----
-  titlePanel("VCF to FASTA Processing"),
+  titlePanel(h1("Endicott College Bioinformatics"), "Shiny App for Unit 1 Project"),
+  tags$hr(),
   
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
@@ -39,7 +43,7 @@ fluidPage(
       
       # Input: Select a file ----
       VCF_UI("test1"),
-      actionButton("pvButton", "Preview vcf file"),
+      actionButton("pvButton", h6("Preview vcf file")),
       # Horizontal line, provides spacing
       tags$hr(),
       # Input: Select a file ----
